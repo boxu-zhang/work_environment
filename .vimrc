@@ -19,6 +19,16 @@ Plugin 'joshdick/onedark.vim'
 " Statusline
 Plugin 'itchyny/lightline.vim'
 
+" Go Language
+Plugin 'fatih/vim-go'
+
+" Go Language Debug
+Plugin 'Shougo/vimshell.vim'
+Plugin 'Shougo/vimproc.vim'
+Plugin 'sebdah/vim-delve'
+
+" YouCompleteMe
+Plugin 'Valloric/YouCompleteMe'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -79,3 +89,46 @@ function! LightLineFilePath()
    return expand('%:p')
 endfunction
 
+" This callback will be executed when the entire command is completed
+function! BackgroundCommandClose(channel)
+   " Read the output from the command into the quickfix window
+   execute "cfile! " . g:backgroundCommandOutput
+   " Open the quickfix window
+   copen
+   unlet g:backgroundCommandOutput
+endfunction
+
+function! RunBackgroundCommand(command)
+   " Make sure we're running VIM version 8 or higher.
+   if v:version < 800
+      echoerr 'RunBackgroundCommand requires VIM version 8 or higher'
+      return
+   endif
+
+   if exists('g:backgroundCommandOutput')
+      echo 'Already running task in background'
+   else
+      echo 'Running task in background'
+      " Launch the job.
+      " Notice that we're only capturing out, and not err here.
+      " This is because, for some reason, the callback will not actually get hit
+      " if we write err out to the same file. Not sure if I'm doing this wrong or?
+   let g:backgroundCommandOutput = tempname()
+   call job_start(a:command, {'close_cb': 'BackgroundCommandClose', 'out_io': 'file', 'out_name': g:backgroundCommandOutput})
+   endif
+endfunction
+
+command! -nargs=+ -complete=shellcmd RunBackgroundCommand call RunBackgroundCommand(<q-args>)
+
+" Set leader key to ,
+let mapleader=","
+
+" Set backspace mode like other editors
+set backspace=2 " make backspace work like most other programs
+
+" Tab visual selection
+vmap <Tab> >gv
+vmap <S-Tab> <gv
+
+" Press F4 to toggle highlighting on/off, and show current value.
+:noremap <F4> :set hlsearch! hlsearch?<CR>
