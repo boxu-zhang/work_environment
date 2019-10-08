@@ -15,7 +15,7 @@ echo -e "#include <stdio.h>\n"\
 "}\n" > main.cpp
 
 # touch CMakeLists.txt from template
-cp ~/.cmakelists.txt ./CMakeLists.txt
+cp ~/.CMakeLists.txt.tpl ./CMakeLists.txt
 
 # replace the PROJECT_NAME to $1
 sed -i -e "s/\${CMAKE_PROJECT_NAME}/$1/g" ./CMakeLists.txt 

@@ -22,13 +22,11 @@ Plugin 'itchyny/lightline.vim'
 " Go Language
 Plugin 'fatih/vim-go'
 
-" Go Language Debug
-Plugin 'Shougo/vimshell.vim'
-Plugin 'Shougo/vimproc.vim'
-Plugin 'sebdah/vim-delve'
-
 " YouCompleteMe
 Plugin 'Valloric/YouCompleteMe'
+
+" Python
+Plugin 'python-mode/python-mode'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
