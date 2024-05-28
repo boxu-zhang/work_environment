@@ -1,47 +1,29 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+call plug#begin()
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-
 " Multiple language syntax highlight
-Plugin 'sheerun/vim-polyglot'
+Plug 'sheerun/vim-polyglot'
 
 " Theme
-Plugin 'joshdick/onedark.vim'
+Plug 'joshdick/onedark.vim'
 
 " Statusline
-Plugin 'itchyny/lightline.vim'
+Plug 'itchyny/lightline.vim'
 
-" Go Language
-Plugin 'fatih/vim-go'
-
-" YouCompleteMe
-Plugin 'Valloric/YouCompleteMe'
-
-" Python
-Plugin 'python-mode/python-mode'
+" Language Server Protocol
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
+Plug 'prabirshrestha/asyncomplete.vim'
 
 " All of your Plugins must be added before the following line
-call vundle#end()            " required
+call plug#end()            " required
+
+" filetype on
 filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
 
 " Private configuration
 " 1. Enable line number
@@ -50,9 +32,9 @@ set number
 " 2. Expand tab to spaces
 set expandtab
 
-" 3. Tab size to 3
-set tabstop=3
-set shiftwidth=3
+" 3. Tab size to 2
+set tabstop=2
+set shiftwidth=2
 
 " 4. Force unix file type
 set ffs=unix
@@ -130,3 +112,37 @@ vmap <S-Tab> <gv
 
 " Press F4 to toggle highlighting on/off, and show current value.
 :noremap <F4> :set hlsearch! hlsearch?<CR>
+
+" Enable vim-lsp
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> <leader>gd <plug>(lsp-definition)
+    nmap <buffer> <leader>gs <plug>(lsp-document-symbol-search)
+    nmap <buffer> <leader>gS <plug>(lsp-workspace-symbol-search)
+    nmap <buffer> <leader>gr <plug>(lsp-references)
+    nmap <buffer> <leader>gi <plug>(lsp-implementation)
+    nmap <buffer> <leader>gt <plug>(lsp-type-definition)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+    nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
+    nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+
+    let g:lsp_format_sync_timeout = 1000
+    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+    
+    " refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+let g:lsp_log_verbose = 1
+let g:lsp_log_file = expand('~/vim-lsp.log')
+

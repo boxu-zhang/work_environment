@@ -1,13 +1,12 @@
 #!/bin/bash
 
-# Install dircolors
-! [[ -f ~/.dircolors ]] && ln -s $(realpath ./dircolors) ~/.dircolors
+# Install vim latest
+git clone https://github.com/vim/vim --depth==1 && cd ./vim && ./configure && make -j4 && make install
+
+# Install vim-plug
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 # Install vimrc
 ! [[ -f ~/.vimrc ]] && ln -s $(realpath ./vimrc) ~/.vimrc
 
-# Install cmakelists tpl
-! [[ -f ~/.CMakeLists.txt.tpl ]] && ln -s $(realpath ./CMakeLists.txt.tpl) ~/.CMakeLists.txt.tpl
-
-# Install vundle
-git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
